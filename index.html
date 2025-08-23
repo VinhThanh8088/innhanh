@@ -134,15 +134,15 @@
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            opacity: 0.9;
         }
 
         .btn-success {
             background-color: #28a745;
         }
-
-        .btn-success:hover {
-            background-color: #1e7e34;
+        
+        .btn-info {
+            background-color: #17a2b8;
         }
 
         @media print {
@@ -268,6 +268,7 @@
     <div class="buttons">
         <button class="btn" onclick="printForm()">In phiếu</button>
         <button class="btn btn-success" onclick="exportToPDF()">Xuất PDF</button>
+        <button class="btn btn-info" onclick="exportToImage()">Xuất hình ảnh</button>
     </div>
 
     <script>
@@ -349,23 +350,17 @@
                 }
             }
             
-            // Cách 2: Dữ liệu từ multiple parameters
+            // Cách 2: Dữ liệu từ multiple parameters (dự phòng)
             if (items.length === 0) {
                 const maHang = getUrlParameter('maHang');
-                const tenHang = getUrlParameter('tenHang');
-                const donVi = getUrlParameter('donVi');
-                const soLuong = getUrlParameter('soLuong');
-                const donGia = getUrlParameter('donGia');
-                const thanhTien = getUrlParameter('thanhTien');
-
                 if (maHang) {
                     items = [{
                         maHang: maHang,
-                        tenHang: tenHang,
-                        donVi: donVi,
-                        soLuong: soLuong,
-                        donGia: donGia,
-                        thanhTien: thanhTien
+                        tenHang: getUrlParameter('tenHang'),
+                        donVi: getUrlParameter('donVi'),
+                        soLuong: getUrlParameter('soLuong'),
+                        donGia: getUrlParameter('donGia'),
+                        thanhTien: getUrlParameter('thanhTien')
                     }];
                 }
             }
@@ -376,12 +371,12 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>1</td>
-                    <td>${getUrlParameter('maHang') || ''}</td>
-                    <td>${getUrlParameter('tenHang') || ''}</td>
-                    <td>${getUrlParameter('donVi') || ''}</td>
-                    <td>${getUrlParameter('soLuong') || ''}</td>
-                    <td>${formatCurrency(getUrlParameter('donGia'))}</td>
-                    <td>${formatCurrency(getUrlParameter('thanhTien'))}</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 `;
                 tbody.appendChild(row);
             } else {
@@ -401,7 +396,7 @@
             }
 
             // Thêm dòng tổng cộng nếu có nhiều items
-            if (items.length > 1) {
+            if (items.length > 0) {
                 const totalAmount = items.reduce((sum, item) => sum + (parseFloat(item.thanhTien) || 0), 0);
                 const totalRow = document.createElement('tr');
                 totalRow.innerHTML = `
@@ -449,6 +444,28 @@
                 
                 const fileName = `Phieu_de_nghi_${getUrlParameter('id') || 'unknown'}.pdf`;
                 pdf.save(fileName);
+            });
+        }
+
+        // *** HÀM MỚI: Xuất hình ảnh ***
+        function exportToImage() {
+            const element = document.getElementById('printArea');
+            const fileName = `Phieu_de_nghi_${getUrlParameter('id') || 'unknown'}.png`;
+
+            html2canvas(element, {
+                scale: 2, // Tăng scale để hình ảnh chất lượng cao hơn
+                useCORS: true,
+                allowTaint: true
+            }).then(function(canvas) {
+                // Tạo một thẻ <a> ẩn để tải xuống
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png');
+
+                // Thêm vào body, thực hiện click và xóa đi
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
         }
 

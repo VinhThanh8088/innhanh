@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Đề Nghị Yêu Cầu</title>
+    <title>Hóa Đơn Bán Hàng</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -12,467 +12,298 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Times New Roman', serif;
-            line-height: 1.4;
+            font-family: 'Arial', sans-serif; /* Thay đổi font cho hiện đại hơn */
+            line-height: 1.6;
             color: #333;
-            background-color: #f5f5f5;
+            background-color: #f4f4f4;
             padding: 20px;
         }
-
-        .container {
+        .invoice-container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            border: 1px solid #ddd;
         }
-
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
         }
-
-        .company-name {
+        .header h1 {
+            font-size: 24px;
+            text-transform: uppercase;
+            color: #222;
+        }
+        .header .invoice-id {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+        .info-section {
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-section div {
+            width: 48%;
+        }
+        .info-section h3 {
             font-size: 16px;
-            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .info-section p {
+            font-size: 14px;
             margin-bottom: 5px;
         }
-
-        .title {
-            font-size: 18px;
+        .info-section .label {
             font-weight: bold;
-            text-transform: uppercase;
-            margin: 15px 0;
+            display: inline-block;
+            min-width: 100px;
         }
-
-        .form-row {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-
-        .form-row.full-width {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .label {
-            font-weight: bold;
-            min-width: 150px;
-            margin-right: 10px;
-        }
-
-        .value {
-            flex: 1;
-            padding: 5px;
-            border-bottom: 1px solid #333;
-            min-height: 25px;
-        }
-
-        .table-section {
-            margin: 20px 0;
-        }
-
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin-bottom: 30px;
         }
-
-        .items-table th,
-        .items-table td {
-            border: 1px solid #333;
-            padding: 8px;
-            text-align: center;
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
         }
-
         .items-table th {
-            background-color: #f0f0f0;
+            background-color: #f8f8f8;
             font-weight: bold;
-        }
-
-        .signature-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .signature-box {
             text-align: center;
-            width: 200px;
         }
-
-        .signature-title {
+        .items-table td:nth-child(2),
+        .items-table td:nth-child(3),
+        .items-table td:nth-child(4) {
+            text-align: right;
+        }
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .totals-section table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+        .totals-section td {
+            padding: 10px;
+            font-size: 14px;
+        }
+        .totals-section .label {
             font-weight: bold;
-            margin-bottom: 50px;
+            text-align: right;
         }
-
-        .signature-line {
-            border-bottom: 1px solid #333;
-            margin: 5px 0;
+        .totals-section .total-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #dc3545; /* Màu đỏ cho nổi bật */
         }
-
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-style: italic;
+            color: #777;
+        }
         .buttons {
             text-align: center;
             margin: 20px 0;
-            gap: 10px;
         }
-
         .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 0 5px;
+            background-color: #007bff; color: white; padding: 10px 20px;
+            border: none; border-radius: 5px; cursor: pointer;
+            font-size: 14px; margin: 0 5px;
         }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-success {
-            background-color: #28a745;
-        }
-        
-        .btn-info {
-            background-color: #17a2b8;
-        }
+        .btn:hover { opacity: 0.9; }
+        .btn-success { background-color: #28a745; }
+        .btn-info { background-color: #17a2b8; }
 
         @media print {
-            body {
-                background-color: white;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-                max-width: none;
-                margin: 0;
-                padding: 20px;
-            }
-            .buttons {
-                display: none;
-            }
-        }
-
-        .status-approved {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .status-pending {
-            color: #ffc107;
-            font-weight: bold;
-        }
-
-        .status-rejected {
-            color: #dc3545;
-            font-weight: bold;
+            body { background-color: white; padding: 0; }
+            .invoice-container { box-shadow: none; border: none; max-width: none; margin: 0; padding: 10px; }
+            .buttons { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="printArea">
-        <!-- Header -->
+    <div class="invoice-container" id="printArea">
         <div class="header">
-            <div class="company-name">CÔNG TY ABC</div>
-            <div class="title">PHIẾU ĐỀ NGHỊ YÊU CẦU</div>
+            <h1>Hóa Đơn Bán Hàng</h1>
+            <p class="invoice-id">Mã Hóa Đơn: <span id="maHoaDon"></span></p>
         </div>
 
-        <!-- Thông tin cơ bản -->
-        <div class="form-row">
-            <span class="label">ID Yêu cầu:</span>
-            <span class="value" id="idYeuCau"></span>
+        <div class="info-section">
+            <div class="store-info">
+                <h3>THÔNG TIN CỬA HÀNG</h3>
+                <p><span class="label">Tên cửa hàng:</span> [Điền tên cửa hàng của bạn]</p>
+                <p><span class="label">Địa chỉ:</span> [Điền địa chỉ của bạn]</p>
+                <p><span class="label">Số điện thoại:</span> [Điền SĐT của bạn]</p>
+            </div>
+            <div class="customer-info">
+                <h3>THÔNG TIN KHÁCH HÀNG</h3>
+                <p><span class="label">Tên khách hàng:</span> <span id="tenKH"></span></p>
+                <p><span class="label">Số điện thoại:</span> <span id="sdtKH"></span></p>
+                <p><span class="label">Địa chỉ:</span> <span id="diaChiKH"></span></p>
+                <p><span class="label">Ngày mua:</span> <span id="ngayMua"></span></p>
+            </div>
         </div>
 
-        <div class="form-row">
-            <span class="label">Ngày yêu cầu:</span>
-            <span class="value" id="ngayYeuCau"></span>
-        </div>
-
-        <div class="form-row">
-            <span class="label">Người yêu cầu:</span>
-            <span class="value" id="nguoiYeuCau"></span>
-        </div>
-
-        <div class="form-row">
-            <span class="label">Trạng thái:</span>
-            <span class="value" id="trangThai"></span>
-        </div>
-
-        <!-- Bảng chi tiết hàng hóa -->
-        <div class="table-section">
-            <h3>Chi tiết yêu cầu:</h3>
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th style="width: 10%">STT</th>
-                        <th style="width: 15%">Mã hàng</th>
-                        <th style="width: 25%">Tên hàng</th>
-                        <th style="width: 10%">Đơn vị</th>
-                        <th style="width: 10%">Số lượng</th>
-                        <th style="width: 15%">Đơn giá</th>
-                        <th style="width: 15%">Thành tiền</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsTableBody">
-                    <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Số Lượng</th>
+                    <th>Đơn Giá</th>
+                    <th>Thành Tiền</th>
+                </tr>
+            </thead>
+            <tbody id="itemsTableBody">
                 </tbody>
+        </table>
+
+        <div class="totals-section">
+            <table>
+                <tr>
+                    <td class="label">Tổng tiền hàng:</td>
+                    <td id="tongTienHang"></td>
+                </tr>
+                <tr>
+                    <td class="label">Chiết khấu:</td>
+                    <td id="chietKhau"></td>
+                </tr>
+                <tr>
+                    <td class="label total-amount">KHÁCH CẦN TRẢ:</td>
+                    <td class="total-amount" id="khachCanTra"></td>
+                </tr>
             </table>
         </div>
 
-        <!-- Ghi chú -->
-        <div class="form-row full-width">
-            <span class="label">Ghi chú:</span>
-            <div class="value" id="ghiChu" style="min-height: 50px; border: 1px solid #333; padding: 10px;"></div>
-        </div>
-
-        <!-- Thông tin duyệt -->
-        <div class="form-row">
-            <span class="label">Người duyệt:</span>
-            <span class="value" id="nguoiDuyet"></span>
-        </div>
-
-        <div class="form-row">
-            <span class="label">Ngày duyệt:</span>
-            <span class="value" id="ngayDuyet"></span>
-        </div>
-
-        <div class="form-row full-width">
-            <span class="label">Ghi chú duyệt:</span>
-            <div class="value" id="ghiChuDuyet" style="min-height: 50px; border: 1px solid #333; padding: 10px;"></div>
-        </div>
-
-        <!-- Chữ ký -->
-        <div class="signature-section">
-            <div class="signature-box">
-                <div class="signature-title">Người yêu cầu</div>
-                <div class="signature-line"></div>
-                <div id="nguoiYeuCauKy"></div>
-            </div>
-            <div class="signature-box">
-                <div class="signature-title">Người duyệt</div>
-                <div class="signature-line"></div>
-                <div id="nguoiDuyetKy"></div>
-            </div>
+        <div class="footer">
+            <p>Cảm ơn quý khách đã mua hàng!</p>
         </div>
     </div>
 
-    <!-- Buttons -->
     <div class="buttons">
-        <button class="btn" onclick="printForm()">In phiếu</button>
-        <button class="btn btn-success" onclick="exportToPDF()">Xuất PDF</button>
-        <button class="btn btn-info" onclick="exportToImage()">Xuất hình ảnh</button>
+        <button class="btn" onclick="printForm()">🖨️ In Hóa Đơn</button>
+        <button class="btn btn-success" onclick="exportToPDF()">📄 Xuất PDF</button>
+        <button class="btn btn-info" onclick="exportToImage()">🖼️ Xuất hình ảnh</button>
     </div>
 
     <script>
-        // Hàm lấy parameters từ URL
+        // Hàm lấy tham số từ URL
         function getUrlParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name) || '';
         }
 
-        // Hàm format tiền tệ
+        // Hàm định dạng tiền tệ Việt Nam
         function formatCurrency(amount) {
             if (!amount) return '0';
             return parseFloat(amount).toLocaleString('vi-VN') + ' đ';
         }
 
-        // Hàm format ngày
+        // Hàm định dạng ngày tháng
         function formatDate(dateString) {
             if (!dateString) return '';
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
             const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN');
+            return date.toLocaleDateString('vi-VN', options);
         }
 
-        // Hàm format trạng thái
-        function formatStatus(status) {
-            const statusElement = document.getElementById('trangThai');
-            switch(status?.toLowerCase()) {
-                case 'approved':
-                case 'đã duyệt':
-                    statusElement.className = 'value status-approved';
-                    return 'Đã duyệt';
-                case 'pending':
-                case 'chờ duyệt':
-                    statusElement.className = 'value status-pending';
-                    return 'Chờ duyệt';
-                case 'rejected':
-                case 'từ chối':
-                    statusElement.className = 'value status-rejected';
-                    return 'Từ chối';
-                default:
-                    return status || '';
-            }
-        }
-
-        // Hàm load dữ liệu từ URL
-        function loadDataFromUrl() {
-            // Load thông tin cơ bản
-            document.getElementById('idYeuCau').textContent = getUrlParameter('id') || '';
-            document.getElementById('ngayYeuCau').textContent = formatDate(getUrlParameter('ngayYeuCau'));
-            document.getElementById('nguoiYeuCau').textContent = getUrlParameter('nguoiYeuCau') || '';
-            document.getElementById('trangThai').textContent = formatStatus(getUrlParameter('trangThai'));
-            document.getElementById('ghiChu').textContent = getUrlParameter('ghiChu') || '';
-            document.getElementById('nguoiDuyet').textContent = getUrlParameter('nguoiDuyet') || '';
-            document.getElementById('ngayDuyet').textContent = formatDate(getUrlParameter('ngayDuyet'));
-            document.getElementById('ghiChuDuyet').textContent = getUrlParameter('ghiChuDuyet') || '';
-            
-            // Set chữ ký
-            document.getElementById('nguoiYeuCauKy').textContent = getUrlParameter('nguoiYeuCau') || '';
-            document.getElementById('nguoiDuyetKy').textContent = getUrlParameter('nguoiDuyet') || '';
-
-            // Load chi tiết hàng hóa
-            loadItemsData();
-        }
-
-        // Hàm load dữ liệu chi tiết hàng hóa
+        // Hàm tải dữ liệu chi tiết sản phẩm
         function loadItemsData() {
             const tbody = document.getElementById('itemsTableBody');
             tbody.innerHTML = '';
-
-            // Lấy dữ liệu từ URL (có thể là JSON string hoặc multiple parameters)
             let items = [];
-            
-            // Cách 1: Dữ liệu JSON trong parameter
             const itemsJson = getUrlParameter('items');
+
             if (itemsJson) {
                 try {
                     items = JSON.parse(decodeURIComponent(itemsJson));
                 } catch (e) {
-                    console.error('Error parsing items JSON:', e);
+                    console.error('Lỗi xử lý JSON chi tiết sản phẩm:', e);
+                    tbody.innerHTML = '<tr><td colspan="4">Không thể tải chi tiết đơn hàng.</td></tr>';
+                    return;
                 }
             }
             
-            // Cách 2: Dữ liệu từ multiple parameters (dự phòng)
-            if (items.length === 0) {
-                const maHang = getUrlParameter('maHang');
-                if (maHang) {
-                    items = [{
-                        maHang: maHang,
-                        tenHang: getUrlParameter('tenHang'),
-                        donVi: getUrlParameter('donVi'),
-                        soLuong: getUrlParameter('soLuong'),
-                        donGia: getUrlParameter('donGia'),
-                        thanhTien: getUrlParameter('thanhTien')
-                    }];
-                }
-            }
-
-            // Hiển thị dữ liệu
-            if (items.length === 0) {
-                // Tạo dòng trống nếu không có dữ liệu
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>1</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                `;
-                tbody.appendChild(row);
-            } else {
-                items.forEach((item, index) => {
+            if (items.length > 0) {
+                items.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.maHang || ''}</td>
-                        <td>${item.tenHang || ''}</td>
-                        <td>${item.donVi || ''}</td>
-                        <td>${item.soLuong || ''}</td>
+                        <td>${item.tenSP || ''}</td>
+                        <td>${item.soLuong || 0}</td>
                         <td>${formatCurrency(item.donGia)}</td>
                         <td>${formatCurrency(item.thanhTien)}</td>
                     `;
                     tbody.appendChild(row);
                 });
-            }
-
-            // Thêm dòng tổng cộng nếu có nhiều items
-            if (items.length > 0) {
-                const totalAmount = items.reduce((sum, item) => sum + (parseFloat(item.thanhTien) || 0), 0);
-                const totalRow = document.createElement('tr');
-                totalRow.innerHTML = `
-                    <td colspan="6" style="font-weight: bold; text-align: right;">Tổng cộng:</td>
-                    <td style="font-weight: bold;">${formatCurrency(totalAmount)}</td>
-                `;
-                tbody.appendChild(totalRow);
+            } else {
+                 tbody.innerHTML = '<tr><td colspan="4">Không có sản phẩm nào.</td></tr>';
             }
         }
 
-        // Hàm in
-        function printForm() {
-            window.print();
+        // Hàm tải toàn bộ dữ liệu từ URL vào trang
+        function loadDataFromUrl() {
+            // Thông tin hóa đơn
+            document.getElementById('maHoaDon').textContent = getUrlParameter('maDonHang');
+            document.getElementById('ngayMua').textContent = formatDate(getUrlParameter('ngayMua'));
+
+            // Thông tin khách hàng
+            document.getElementById('tenKH').textContent = getUrlParameter('tenKH');
+            document.getElementById('sdtKH').textContent = getUrlParameter('sdtKH');
+            document.getElementById('diaChiKH').textContent = getUrlParameter('diaChiKH');
+
+            // Tổng tiền
+            document.getElementById('tongTienHang').textContent = formatCurrency(getUrlParameter('tongTien'));
+            document.getElementById('chietKhau').textContent = formatCurrency(getUrlParameter('chietKhau'));
+            document.getElementById('khachCanTra').textContent = formatCurrency(getUrlParameter('thanhTien'));
+            
+            // Tải danh sách sản phẩm
+            loadItemsData();
         }
 
-        // Hàm xuất PDF
+        // Các hàm chức năng in, xuất file
+        function printForm() { window.print(); }
+
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('printArea');
-            
-            html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true
-            }).then(function(canvas) {
+            const fileName = `Hoa_don_${getUrlParameter('maDonHang') || 'moi'}.pdf`;
+
+            html2canvas(element, { scale: 2 }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                
                 const imgWidth = 210;
-                const pageHeight = 295;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                
-                let position = 0;
-                
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-                
-                while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                }
-                
-                const fileName = `Phieu_de_nghi_${getUrlParameter('id') || 'unknown'}.pdf`;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
                 pdf.save(fileName);
             });
         }
 
-        // *** HÀM MỚI: Xuất hình ảnh ***
         function exportToImage() {
             const element = document.getElementById('printArea');
-            const fileName = `Phieu_de_nghi_${getUrlParameter('id') || 'unknown'}.png`;
+            const fileName = `Hoa_don_${getUrlParameter('maDonHang') || 'moi'}.png`;
 
-            html2canvas(element, {
-                scale: 2, // Tăng scale để hình ảnh chất lượng cao hơn
-                useCORS: true,
-                allowTaint: true
-            }).then(function(canvas) {
-                // Tạo một thẻ <a> ẩn để tải xuống
+            html2canvas(element, { scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = fileName;
                 link.href = canvas.toDataURL('image/png');
-
-                // Thêm vào body, thực hiện click và xóa đi
-                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
             });
         }
-
-        // Load dữ liệu khi trang được tải
-        window.onload = function() {
-            loadDataFromUrl();
-        };
+        
+        // Tải dữ liệu khi trang được mở
+        window.onload = loadDataFromUrl;
     </script>
 </body>
 </html>

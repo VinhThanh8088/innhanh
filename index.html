@@ -3,69 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóa Đơn Bán Hàng</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Phiếu Bán Hàng</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
-            font-family: 'Arial', sans-serif; /* Thay đổi font cho hiện đại hơn */
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
             padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            max-width: 760px;
+            margin: auto;
+            padding: 30px;
             border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
         }
         .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 24px;
-            text-transform: uppercase;
-            color: #222;
-        }
-        .header .invoice-id {
-            font-size: 14px;
-            color: #555;
-            margin-top: 5px;
-        }
-        .info-section {
-            border-top: 2px solid #333;
-            border-bottom: 2px solid #333;
-            padding: 15px 0;
-            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
-        .info-section div {
-            width: 48%;
+        .company-details h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.5em;
         }
-        .info-section h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
+        .company-details p {
+            margin: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
         }
-        .info-section p {
-            font-size: 14px;
-            margin-bottom: 5px;
+        .invoice-details {
+            text-align: right;
         }
-        .info-section .label {
-            font-weight: bold;
-            display: inline-block;
-            min-width: 100px;
+        .invoice-details h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .invoice-details p {
+            margin: 5px 0 0 0;
+        }
+        .customer-info {
+            margin-bottom: 30px;
+        }
+        .customer-info h3 {
+            margin-top: 0;
+        }
+        .customer-info p {
+            margin: 5px 0;
         }
         .items-table {
             width: 100%;
@@ -74,236 +67,211 @@
         }
         .items-table th, .items-table td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 8px;
             text-align: left;
         }
         .items-table th {
-            background-color: #f8f8f8;
+            background-color: #f2f2f2;
             font-weight: bold;
+        }
+        .items-table td.number, .items-table th.number {
+            text-align: right;
+        }
+        .items-table td.center, .items-table th.center {
             text-align: center;
         }
-        .items-table td:nth-child(2),
-        .items-table td:nth-child(3),
-        .items-table td:nth-child(4) {
+        .summary {
             text-align: right;
+            margin-bottom: 30px;
         }
-        .totals-section {
-            display: flex;
-            justify-content: flex-end;
+        .summary p {
+            margin: 5px 0;
+            font-size: 1.1em;
         }
-        .totals-section table {
-            width: 50%;
-            border-collapse: collapse;
-        }
-        .totals-section td {
-            padding: 10px;
-            font-size: 14px;
-        }
-        .totals-section .label {
+        .summary .total {
             font-weight: bold;
-            text-align: right;
-        }
-        .totals-section .total-amount {
-            font-size: 18px;
-            font-weight: bold;
-            color: #dc3545; /* Màu đỏ cho nổi bật */
+            font-size: 1.2em;
         }
         .footer {
             text-align: center;
-            margin-top: 40px;
-            font-style: italic;
-            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
         }
-        .buttons {
+        .actions {
             text-align: center;
             margin: 20px 0;
         }
-        .btn {
-            background-color: #007bff; color: white; padding: 10px 20px;
-            border: none; border-radius: 5px; cursor: pointer;
-            font-size: 14px; margin: 0 5px;
+        .actions button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
         }
-        .btn:hover { opacity: 0.9; }
-        .btn-success { background-color: #28a745; }
-        .btn-info { background-color: #17a2b8; }
+        .print-btn { background-color: #4CAF50; }
+        .pdf-btn { background-color: #f44336; }
+        .img-btn { background-color: #008CBA; }
 
         @media print {
-            body { background-color: white; padding: 0; }
-            .invoice-container { box-shadow: none; border: none; max-width: none; margin: 0; padding: 10px; }
-            .buttons { display: none; }
+            body { background-color: #fff; }
+            .actions { display: none; }
+            .invoice-container {
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="invoice-container" id="printArea">
+
+    <div class="actions">
+        <button class="print-btn" onclick="printInvoice()">In Phiếu</button>
+        <button class="pdf-btn" onclick="downloadPDF()">Tải PDF</button>
+        <button class="img-btn" onclick="downloadImage()">Tải Ảnh</button>
+    </div>
+
+    <div id="invoice-to-print" class="invoice-container">
         <div class="header">
-            <h1>Hóa Đơn Bán Hàng</h1>
-            <p class="invoice-id">Mã Hóa Đơn: <span id="maHoaDon"></span></p>
+            <div class="company-details">
+                <h2 id="shopName"></h2>
+                <p>
+                    Địa chỉ của bạn, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố<br>
+                    Số điện thoại: (0xx) xxxx xxxx
+                </p>
+            </div>
+            <div class="invoice-details">
+                <h1>PHIẾU BÁN HÀNG</h1>
+                <p>Mã Đơn: <strong id="maDonHang"></strong></p>
+                <p>Ngày Tạo: <span id="ngayTao"></span></p>
+            </div>
         </div>
 
-        <div class="info-section">
-            <div class="store-info">
-                <h3>THÔNG TIN CỬA HÀNG</h3>
-                <p><span class="label">Tên cửa hàng:</span> [Điền tên cửa hàng của bạn]</p>
-                <p><span class="label">Địa chỉ:</span> [Điền địa chỉ của bạn]</p>
-                <p><span class="label">Số điện thoại:</span> [Điền SĐT của bạn]</p>
-            </div>
-            <div class="customer-info">
-                <h3>THÔNG TIN KHÁCH HÀNG</h3>
-                <p><span class="label">Tên khách hàng:</span> <span id="tenKH"></span></p>
-                <p><span class="label">Số điện thoại:</span> <span id="sdtKH"></span></p>
-                <p><span class="label">Địa chỉ:</span> <span id="diaChiKH"></span></p>
-                <p><span class="label">Ngày mua:</span> <span id="ngayMua"></span></p>
-            </div>
+        <div class="customer-info">
+            <h3>Thông tin khách hàng:</h3>
+            <p><strong>Tên Khách Hàng:</strong> <span id="tenKH"></span></p>
+            <p><strong>Số Điện Thoại:</strong> <span id="soDienThoai"></span></p>
+            <p><strong>Địa Chỉ:</strong> <span id="diaChi"></span></p>
         </div>
 
         <table class="items-table">
             <thead>
                 <tr>
+                    <th class="center">STT</th>
                     <th>Tên Sản Phẩm</th>
-                    <th>Số Lượng</th>
-                    <th>Đơn Giá</th>
-                    <th>Thành Tiền</th>
+                    <th class="center">ĐVT</th>
+                    <th class="center">Số Lượng</th>
+                    <th class="number">Đơn Giá</th>
+                    <th class="number">Thành Tiền</th>
                 </tr>
             </thead>
-            <tbody id="itemsTableBody">
-                </tbody>
+            <tbody id="chiTietDonHangBody">
+            </tbody>
         </table>
 
-        <div class="totals-section">
-            <table>
-                <tr>
-                    <td class="label">Tổng tiền hàng:</td>
-                    <td id="tongTienHang"></td>
-                </tr>
-                <tr>
-                    <td class="label">Chiết khấu:</td>
-                    <td id="chietKhau"></td>
-                </tr>
-                <tr>
-                    <td class="label total-amount">KHÁCH CẦN TRẢ:</td>
-                    <td class="total-amount" id="khachCanTra"></td>
-                </tr>
-            </table>
+        <div class="summary">
+            <p>Tổng Tiền Hàng: <span id="tongTien"></span> VNĐ</p>
+            <p>Giảm Giá: <span id="giamGia"></span> VNĐ</p>
+            <p class="total">Thành Tiền Thanh Toán: <strong id="thanhTien"></strong> VNĐ</p>
+        </div>
+        
+        <div class="notes">
+            <p><strong>Ghi chú:</strong> <span id="ghiChu"></span></p>
         </div>
 
         <div class="footer">
-            <p>Cảm ơn quý khách đã mua hàng!</p>
+            <p><strong>Cảm ơn quý khách đã mua hàng!</strong></p>
         </div>
     </div>
 
-    <div class="buttons">
-        <button class="btn" onclick="printForm()">🖨️ In Hóa Đơn</button>
-        <button class="btn btn-success" onclick="exportToPDF()">📄 Xuất PDF</button>
-        <button class="btn btn-info" onclick="exportToImage()">🖼️ Xuất hình ảnh</button>
-    </div>
-
     <script>
-        // Hàm lấy tham số từ URL
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name) || '';
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
         }
 
-        // Hàm định dạng tiền tệ Việt Nam
-        function formatCurrency(amount) {
-            if (!amount) return '0';
-            return parseFloat(amount).toLocaleString('vi-VN') + ' đ';
-        }
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
 
-        // Hàm định dạng ngày tháng
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-            const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN', options);
-        }
+            document.getElementById('shopName').textContent = params.get('shopName') || 'TÊN SHOP CỦA BẠN';
 
-        // Hàm tải dữ liệu chi tiết sản phẩm
-        function loadItemsData() {
-            const tbody = document.getElementById('itemsTableBody');
-            tbody.innerHTML = '';
-            let items = [];
-            const itemsJson = getUrlParameter('items');
+            document.getElementById('maDonHang').textContent = params.get('maDonHang') || 'N/A';
+            document.getElementById('ngayTao').textContent = params.get('ngayTao') ? new Date(params.get('ngayTao')).toLocaleDateString('vi-VN') : 'N/A';
+            
+            document.getElementById('tenKH').textContent = params.get('tenKH') || 'N/A';
+            document.getElementById('soDienThoai').textContent = params.get('soDienThoai') || 'N/A';
+            document.getElementById('diaChi').textContent = params.get('diaChi') || 'N/A';
 
-            if (itemsJson) {
+            document.getElementById('tongTien').textContent = formatNumber(params.get('tongTien'));
+            document.getElementById('giamGia').textContent = formatNumber(params.get('giamGia'));
+            document.getElementById('thanhTien').textContent = formatNumber(params.get('thanhTien'));
+            document.getElementById('ghiChu').textContent = params.get('ghiChu') || 'Không có';
+
+            const chiTietParam = params.get('chiTiet');
+            const chiTietBody = document.getElementById('chiTietDonHangBody');
+
+            if (chiTietParam) {
                 try {
-                    items = JSON.parse(decodeURIComponent(itemsJson));
+                    const chiTietData = JSON.parse(decodeURIComponent(chiTietParam));
+                    let stt = 1;
+                    chiTietData.forEach(item => {
+                        const row = `
+                            <tr>
+                                <td class="center">${stt}</td>
+                                <td>${item.tenSP || 'N/A'}</td>
+                                <td class="center">${item.dvt || ''}</td>
+                                <td class="center">${formatNumber(item.soLuong)}</td>
+                                <td class="number">${formatNumber(item.donGia)}</td>
+                                <td class="number">${formatNumber(item.thanhTien)}</td>
+                            </tr>
+                        `;
+                        chiTietBody.innerHTML += row;
+                        stt++;
+                    });
                 } catch (e) {
-                    console.error('Lỗi xử lý JSON chi tiết sản phẩm:', e);
-                    tbody.innerHTML = '<tr><td colspan="4">Không thể tải chi tiết đơn hàng.</td></tr>';
-                    return;
+                    chiTietBody.innerHTML = '<tr><td colspan="6">Lỗi đọc dữ liệu chi tiết đơn hàng.</td></tr>';
+                    console.error("Lỗi JSON:", e);
                 }
-            }
-            
-            if (items.length > 0) {
-                items.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.tenSP || ''}</td>
-                        <td>${item.soLuong || 0}</td>
-                        <td>${formatCurrency(item.donGia)}</td>
-                        <td>${formatCurrency(item.thanhTien)}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
             } else {
-                 tbody.innerHTML = '<tr><td colspan="4">Không có sản phẩm nào.</td></tr>';
+                 chiTietBody.innerHTML = '<tr><td colspan="6">Không có chi tiết đơn hàng.</td></tr>';
             }
+        };
+
+        function printInvoice() {
+            window.print();
         }
 
-        // Hàm tải toàn bộ dữ liệu từ URL vào trang
-        function loadDataFromUrl() {
-            // Thông tin hóa đơn
-            document.getElementById('maHoaDon').textContent = getUrlParameter('maDonHang');
-            document.getElementById('ngayMua').textContent = formatDate(getUrlParameter('ngayMua'));
-
-            // Thông tin khách hàng
-            document.getElementById('tenKH').textContent = getUrlParameter('tenKH');
-            document.getElementById('sdtKH').textContent = getUrlParameter('sdtKH');
-            document.getElementById('diaChiKH').textContent = getUrlParameter('diaChiKH');
-
-            // Tổng tiền
-            document.getElementById('tongTienHang').textContent = formatCurrency(getUrlParameter('tongTien'));
-            document.getElementById('chietKhau').textContent = formatCurrency(getUrlParameter('chietKhau'));
-            document.getElementById('khachCanTra').textContent = formatCurrency(getUrlParameter('thanhTien'));
-            
-            // Tải danh sách sản phẩm
-            loadItemsData();
-        }
-
-        // Các hàm chức năng in, xuất file
-        function printForm() { window.print(); }
-
-        function exportToPDF() {
+        function downloadPDF() {
             const { jsPDF } = window.jspdf;
-            const element = document.getElementById('printArea');
-            const fileName = `Hoa_don_${getUrlParameter('maDonHang') || 'moi'}.pdf`;
+            const invoiceElement = document.getElementById('invoice-to-print');
+            const maDonHang = document.getElementById('maDonHang').textContent;
 
-            html2canvas(element, { scale: 2 }).then(canvas => {
+            html2canvas(invoiceElement).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save(fileName);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`DonHang_${maDonHang}.pdf`);
             });
         }
 
-        function exportToImage() {
-            const element = document.getElementById('printArea');
-            const fileName = `Hoa_don_${getUrlParameter('maDonHang') || 'moi'}.png`;
+        function downloadImage() {
+            const invoiceElement = document.getElementById('invoice-to-print');
+            const maDonHang = document.getElementById('maDonHang').textContent;
 
-            html2canvas(element, { scale: 2 }).then(canvas => {
+            html2canvas(invoiceElement).then(canvas => {
                 const link = document.createElement('a');
-                link.download = fileName;
+                link.download = `DonHang_${maDonHang}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
         }
-        
-        // Tải dữ liệu khi trang được mở
-        window.onload = loadDataFromUrl;
     </script>
 </body>
 </html>

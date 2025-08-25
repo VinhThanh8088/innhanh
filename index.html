@@ -10,21 +10,23 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px; /* Giảm padding cho màn hình nhỏ */
             background-color: #f4f4f4;
             color: #333;
+            font-size: 14px; /* Đặt font-size cơ bản */
         }
         .invoice-container {
+            width: 100%; /* Sử dụng toàn bộ chiều rộng */
             max-width: 760px;
             margin: auto;
-            padding: 30px;
+            padding: 20px; /* Giảm padding */
             border: 1px solid #ddd;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-color: #fff;
         }
         .header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column; /* Xếp chồng trên di động */
             align-items: flex-start;
             border-bottom: 2px solid #333;
             padding-bottom: 15px;
@@ -33,7 +35,7 @@
         .company-details h2 {
             margin: 0 0 5px 0;
             color: #333;
-            font-size: 1.5em;
+            font-size: 1.4em;
         }
         .company-details p {
             margin: 0;
@@ -41,11 +43,13 @@
             line-height: 1.5;
         }
         .invoice-details {
-            text-align: right;
+            text-align: left; /* Căn trái trên di động */
+            width: 100%;
+            margin-top: 15px; /* Thêm khoảng cách */
         }
         .invoice-details h1 {
             margin: 0;
-            font-size: 1.5em;
+            font-size: 1.4em;
             color: #333;
         }
         .invoice-details p {
@@ -56,6 +60,7 @@
         }
         .customer-info h3 {
             margin-top: 0;
+            font-size: 1.1em;
         }
         .customer-info p {
             margin: 5px 0;
@@ -64,10 +69,11 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
+            font-size: 0.9em; /* Giảm font-size bảng */
         }
         .items-table th, .items-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px; /* Giảm padding ô */
             text-align: left;
         }
         .items-table th {
@@ -86,11 +92,11 @@
         }
         .summary p {
             margin: 5px 0;
-            font-size: 1.1em;
+            font-size: 1em; /* Điều chỉnh font-size */
         }
         .summary .total {
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
         .footer {
             text-align: center;
@@ -103,9 +109,9 @@
             margin: 20px 0;
         }
         .actions button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             margin: 5px;
-            font-size: 16px;
+            font-size: 1em;
             cursor: pointer;
             border: none;
             border-radius: 5px;
@@ -116,7 +122,7 @@
         .img-btn { background-color: #008CBA; }
 
         @media print {
-            body { background-color: #fff; }
+            body { background-color: #fff; padding: 0; }
             .actions { display: none; }
             .invoice-container {
                 box-shadow: none;
@@ -124,6 +130,31 @@
                 margin: 0;
                 padding: 0;
                 max-width: 100%;
+            }
+        }
+        
+        /* CSS cho màn hình lớn hơn (Desktop) */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+                font-size: 16px;
+            }
+            .invoice-container {
+                padding: 30px;
+            }
+            .header {
+                flex-direction: row; /* Xếp ngang trên desktop */
+                align-items: flex-start;
+            }
+            .invoice-details {
+                text-align: right; /* Căn phải trên desktop */
+                margin-top: 0;
+            }
+            .items-table {
+                font-size: 1em; /* Trả về font-size gốc */
+            }
+            .items-table th, .items-table td {
+                padding: 8px; /* Trả về padding gốc */
             }
         }
     </style>
@@ -165,7 +196,7 @@
                     <th class="center">STT</th>
                     <th>Tên Sản Phẩm</th>
                     <th class="center">ĐVT</th>
-                    <th class="center">Số Lượng</th>
+                    <th class="center">SL</th>
                     <th class="number">Đơn Giá</th>
                     <th class="number">Thành Tiền</th>
                 </tr>
